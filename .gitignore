@@ -1,23 +1,53 @@
-# Virtual Environment
+
+# Virtual Environments
 .venv/
 venv/
+env/
+ENV/
 
 # Environment Variables
 .env
 .env.*
-
-# Allow example environment
+.envrc
 !.env.example
 
-# Python
+# Python Cache
 __pycache__/
 *.py[cod]
+*$py.class
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Testing and Coverage
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
 
 # IDE
 .vscode/
 .idea/
+.spyderproject
+.spyproject
+
+# Logs
+*.log
+
+# Build and Distribution
+build/
+dist/
+*.egg-info/
+wheels/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Temporary files
+tempCodeRunnerFile.py
