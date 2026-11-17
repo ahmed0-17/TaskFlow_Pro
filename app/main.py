@@ -2,6 +2,7 @@ from fastapi import FastAPI,Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.api.v1.endpoints.tasks import router as tasks_router
+from app.api.v1.endpoints.auth import router as auth_router
 from app.core.config import settings
 
 app = FastAPI(
@@ -12,6 +13,11 @@ app = FastAPI(
 
 app.include_router(
     tasks_router,
+    prefix=settings.API_V1_PREFIX
+)
+
+app.include_router(
+    auth_router,
     prefix=settings.API_V1_PREFIX
 )
 
