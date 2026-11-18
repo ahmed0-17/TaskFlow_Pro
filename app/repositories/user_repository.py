@@ -15,3 +15,14 @@ def create_user(db: Session, user_data: dict) -> User:
     db.refresh(new_user)
 
     return new_user
+
+
+
+def get_user_by_id(
+    db: Session,
+    user_id: int
+) -> User | None:
+
+    return db.query(User).filter(
+        User.id == user_id
+    ).first()
