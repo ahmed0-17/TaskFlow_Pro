@@ -9,13 +9,14 @@ delete_task
 )
 from fastapi import HTTPException, status
 
-
-
 def create_task_service(
     db: Session,
-    task_data: TaskCreate
+    task_data: TaskCreate,
+    user_id: int
 ):
     task_dict = task_data.model_dump()
+
+    task_dict["user_id"] = user_id
 
     return create_task(db, task_dict)
 
@@ -23,9 +24,14 @@ def create_task_service(
 
 def get_task_service(
     db: Session,
-    task_id: int
+    task_id: int,
+    user_id: int
 ):
-    task = get_task_by_id(db, task_id)
+    task = get_task_by_id(
+        db=db,
+        task_id=task_id,
+        user_id=user_id
+    )
 
     if task is None:
         raise HTTPException(
@@ -39,24 +45,30 @@ def get_task_service(
 
 def get_all_tasks_service(
     db: Session,
+    user_id: int,
     skip: int = 0,
     limit: int = 100
 ):
     return get_all_tasks(
         db=db,
+        user_id=user_id,
         skip=skip,
         limit=limit
     )
 
 
 
-
 def update_task_service(
     db: Session,
     task_id: int,
-    task_data: TaskUpdate
+    task_data: TaskUpdate,
+    user_id: int
 ):
-    task = get_task_by_id(db, task_id)
+    task = get_task_by_id(
+        db=db,
+        task_id=task_id,
+        user_id=user_id
+    )
 
     if task is None:
         raise HTTPException(
@@ -76,12 +88,16 @@ def update_task_service(
 
 
 
-
 def delete_task_service(
     db: Session,
-    task_id: int
+    task_id: int,
+    user_id: int
 ):
-    task = get_task_by_id(db, task_id)
+    task = get_task_by_id(
+        db=db,
+        task_id=task_id,
+        user_id=user_id
+    )
 
     if task is None:
         raise HTTPException(

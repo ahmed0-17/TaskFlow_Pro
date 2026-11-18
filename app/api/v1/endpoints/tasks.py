@@ -2,6 +2,8 @@ from fastapi import Depends, status, APIRouter
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
+from app.dependencies.auth import get_current_user
+from app.models import User
 from app.services.task_service import (
 create_task_service,
 get_task_service,
@@ -23,11 +25,13 @@ router = APIRouter(
 )
 def create_task_endpoint(
     task_data: TaskCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     return create_task_service(
         db=db,
-        task_data=task_data
+        task_data=task_data,
+        user_id=current_user.id
     )
 
 
@@ -39,13 +43,14 @@ def create_task_endpoint(
 )
 def get_task_endpoint(
     task_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     return get_task_service(
         db=db,
-        task_id=task_id
+        task_id=task_id,
+        user_id=current_user.id
     )
-
 
 
 @router.get(
@@ -56,12 +61,14 @@ def get_task_endpoint(
 def get_all_tasks_endpoint(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     return get_all_tasks_service(
         db=db,
         skip=skip,
-        limit=limit
+        limit=limit,
+        user_id=current_user.id
     )
 
 
@@ -74,12 +81,14 @@ def get_all_tasks_endpoint(
 def update_task_endpoint(
     task_id: int,
     task_data: TaskUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     return update_task_service(
         db=db,
         task_id=task_id,
-        task_data=task_data
+        task_data=task_data,
+        user_id=current_user.id
     )
 
 
@@ -90,9 +99,11 @@ def update_task_endpoint(
 )
 def delete_task_endpoint(
     task_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     delete_task_service(
         db=db,
-        task_id=task_id
+        task_id=task_id,
+        user_id=current_user.id
     )

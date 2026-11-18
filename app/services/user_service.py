@@ -42,17 +42,17 @@ def login_user_service(
     email: str,
     password: str
 ):
-    # Step 1: Find user by email
+    
     user = get_user_by_email(db, email)
 
-    # Step 2: Check if user exists
+   
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
         )
 
-    # Step 3: Verify password
+    
     is_password_valid = verify_password(
         password,
         user.password_hash
@@ -64,10 +64,10 @@ def login_user_service(
             detail="Invalid email or password"
         )
 
-    # Step 4: Generate access token
+   
     access_token = create_access_token(user.id)
 
-    # Step 5: Return token
+  
     return {
         "access_token": access_token,
         "token_type": "bearer"
