@@ -1,4 +1,4 @@
-from fastapi import Depends, status, APIRouter
+from fastapi import Depends, status, APIRouter, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
@@ -59,16 +59,22 @@ def get_task_endpoint(
     status_code=status.HTTP_200_OK
 )
 def get_all_tasks_endpoint(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(default=0,ge=0),
+    limit: int = Query(default=0,ge=1,le=100),
+    search: str | None = Query(default=None, min_length=1, max_length=200),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    sort_by: str = Query(default="created_at",pattern="^(created_at|title)$"),
+    sort_order: str = Query(default="desc", pattern="^(asc|desc)$"),
 ):
     return get_all_tasks_service(
         db=db,
         skip=skip,
         limit=limit,
-        user_id=current_user.id
+        user_id=current_user.id,
+        search=search,
+        sort_by=sort_by,
+        sort_order=sort_order
     )
 
 

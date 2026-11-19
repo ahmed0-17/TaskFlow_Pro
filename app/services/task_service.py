@@ -47,13 +47,20 @@ def get_all_tasks_service(
     db: Session,
     user_id: int,
     skip: int = 0,
-    limit: int = 100
+    limit: int = 100,
+    search: str | None = None,
+    sort_by: str = "created_at",
+    sort_order: str = "desc"
 ):
     return get_all_tasks(
         db=db,
         user_id=user_id,
         skip=skip,
-        limit=limit
+        limit=limit,
+        search=search,
+        sort_by=sort_by,
+        sort_order=sort_order
+        
     )
 
 

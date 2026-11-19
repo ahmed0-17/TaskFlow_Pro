@@ -1,6 +1,6 @@
-
 from sqlalchemy.orm import Session
 from app.models import Task
+from sqlalchemy import asc, desc
 
 
 def create_task(
@@ -32,21 +32,45 @@ def get_task_by_id(
         .first()
     )
 
-
 def get_all_tasks(
     db: Session,
     user_id: int,
     skip: int = 0,
-    limit: int = 100
+    limit: int = 100,
+    search: str | None = None,
+    sort_by: str = "created_at",
+    sort_order: str = "desc"
 ) -> list[Task]:
 
+    query = db.query(Task).filter(
+        Task.user_id == user_id
+    )
+
+    if search:
+        query = query.filter(
+            Task.title.ilike(f"%{search}%")
+        )
+
+    sort_columns = {
+        "created_at": Task.created_at,
+        "title": Task.title
+    }
+
+    sort_column = sort_columns[sort_by]
+
+    if sort_order == "desc":
+        query = query.order_by(desc(sort_column))
+    else:
+        query = query.order_by(asc(sort_column))
+    
+
     return (
-        db.query(Task)
-        .filter(Task.user_id == user_id)
+        query
         .offset(skip)
         .limit(limit)
         .all()
     )
+
 
 
 def update_task(
