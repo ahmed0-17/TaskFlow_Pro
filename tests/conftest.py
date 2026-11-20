@@ -1,4 +1,3 @@
-
 from fastapi.testclient import TestClient
 from app.main import app
 import pytest
@@ -7,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from app.core.database import Base, get_db
 from app.core.config import settings
+from app.core.limiter import limiter
 
 TEST_DATABASE_URL = settings.DATABASE_URL.rsplit("/", 1)[0] + "/taskflow_pro_test"
 
@@ -43,7 +43,6 @@ def db_session(test_db):
     finally:
         db.close()
 
-
 @pytest.fixture
 def client(db_session):
     def override_get_db():
@@ -51,7 +50,11 @@ def client(db_session):
 
     app.dependency_overrides[get_db] = override_get_db
 
+    original_enabled = limiter.enabled
+    limiter.enabled = False
+
     with TestClient(app) as test_client:
         yield test_client
 
+    limiter.enabled = original_enabled
     app.dependency_overrides.clear()
