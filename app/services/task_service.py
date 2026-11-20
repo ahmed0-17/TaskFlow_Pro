@@ -50,7 +50,10 @@ def get_all_tasks_service(
     limit: int = 100,
     search: str | None = None,
     sort_by: str = "created_at",
-    sort_order: str = "desc"
+    sort_order: str = "desc",
+    is_completed: bool | None = None,
+    priority: str | None = None,
+    category: str | None = None
 ):
     return get_all_tasks(
         db=db,
@@ -59,7 +62,11 @@ def get_all_tasks_service(
         limit=limit,
         search=search,
         sort_by=sort_by,
-        sort_order=sort_order
+        sort_order=sort_order,
+        is_completed=is_completed,
+        priority=priority,
+        category=category
+        
         
     )
 

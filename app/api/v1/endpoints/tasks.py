@@ -60,13 +60,23 @@ def get_task_endpoint(
 )
 def get_all_tasks_endpoint(
     skip: int = Query(default=0,ge=0),
-    limit: int = Query(default=0,ge=1,le=100),
+    limit: int = Query(default=10,ge=1,le=100),
     search: str | None = Query(default=None, min_length=1, max_length=200),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
     sort_by: str = Query(default="created_at",pattern="^(created_at|title)$"),
     sort_order: str = Query(default="desc", pattern="^(asc|desc)$"),
+    is_completed: bool | None = Query(default=None),
+    priority: str | None = Query(
+    default=None,
+    pattern="^(High|Medium|Low)$"
+     ),
+    category: str | None = Query(
+    default=None,
+    pattern="^(Personal|Work|Study|Shopping)$"
+    ),
 ):
+
     return get_all_tasks_service(
         db=db,
         skip=skip,
@@ -74,7 +84,10 @@ def get_all_tasks_endpoint(
         user_id=current_user.id,
         search=search,
         sort_by=sort_by,
-        sort_order=sort_order
+        sort_order=sort_order,
+        is_completed=is_completed,
+        priority=priority,
+        category=category
     )
 
 

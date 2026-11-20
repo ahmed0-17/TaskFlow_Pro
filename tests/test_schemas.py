@@ -1,12 +1,8 @@
-import sys
-from pathlib import Path
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_ROOT))
-
 from datetime import datetime, timezone
-from app.schemas.task import TaskCreate,TaskUpdate,TaskResponse
+import pytest
+
 from pydantic import ValidationError
+from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
 
 
 class FakeTask:
@@ -19,55 +15,47 @@ class FakeTask:
     created_at = datetime.now(timezone.utc)
 
 
-task = FakeTask()
-
-response = TaskResponse.model_validate(task)
-
-print(response.model_dump(mode="json"))
-
-
-
-
-
-
-# Test 1: Valid task
-task_data = TaskCreate(
-    title="Learn FastAPI",
-    description="Practice Pydantic",
-    priority="High",
-    category="Study"
-)
-
-print("Valid task:", task_data.model_dump(mode="json"))
-
-
-# Test 2: Invalid priority
-try:
-    TaskCreate(
-        title="Learn SQLAlchemy",
-        priority="Urgent",
+def test_valid_task_creation():
+    task = TaskCreate(
+        title="Learn FastAPI",
+        description="Practice Pydantic",
+        priority="High",
         category="Study"
     )
-except ValidationError as error:
-    print("Invalid priority rejected!")
+
+    assert task.title == "Learn FastAPI"
+    assert task.priority == "High"
 
 
-# Test 3: Empty title
-try:
-    TaskCreate(
-        title="",
-        category="Work"
-    )
-except ValidationError:
-    print("Empty title rejected!")
+def test_invalid_priority_rejected():
+    with pytest.raises(ValidationError):
+        TaskCreate(
+            title="Learn SQLAlchemy",
+            priority="Urgent",
+            category="Study"
+        )
 
 
-# Test 4: Partial update
-update_data = TaskUpdate(
-    priority="Low"
-)
+def test_empty_title_rejected():
+    with pytest.raises(ValidationError):
+        TaskCreate(
+            title="",
+            category="Work"
+        )
 
-print(
-    "Partial update:",
-    update_data.model_dump(exclude_unset=True , mode="json")
-)
+
+def test_partial_task_update():
+    update_data = TaskUpdate(priority="Low")
+
+    assert update_data.model_dump(
+        exclude_unset=True
+    ) == {"priority": "Low"}
+
+
+def test_task_response_from_attributes():
+    task = FakeTask()
+
+    response = TaskResponse.model_validate(task)
+
+    assert response.id == 1
+    assert response.title == "Learn FastAPI"

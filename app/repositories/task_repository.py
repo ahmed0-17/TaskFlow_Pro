@@ -17,6 +17,7 @@ def create_task(
     return new_task
 
 
+
 def get_task_by_id(
     db: Session,
     task_id: int,
@@ -32,6 +33,8 @@ def get_task_by_id(
         .first()
     )
 
+
+
 def get_all_tasks(
     db: Session,
     user_id: int,
@@ -39,7 +42,10 @@ def get_all_tasks(
     limit: int = 100,
     search: str | None = None,
     sort_by: str = "created_at",
-    sort_order: str = "desc"
+    sort_order: str = "desc",
+    is_completed: bool | None = None,
+    priority: str | None = None,
+    category: str | None = None,
 ) -> list[Task]:
 
     query = db.query(Task).filter(
@@ -50,6 +56,23 @@ def get_all_tasks(
         query = query.filter(
             Task.title.ilike(f"%{search}%")
         )
+
+    
+    if is_completed is not None:
+     query = query.filter(
+        Task.is_completed == is_completed
+    )
+
+    if priority is not None:
+     query = query.filter(
+        Task.priority == priority
+    )
+
+    if category is not None:
+     query = query.filter(
+        Task.category == category
+    )
+
 
     sort_columns = {
         "created_at": Task.created_at,
